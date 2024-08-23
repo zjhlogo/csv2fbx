@@ -1,11 +1,13 @@
 ﻿// ConvertCSV2FBX.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
 
+#include "CSVFile.h"
+#include "CommonMath.h"
+
 #include <fbxsdk.h>
+
 #include <iostream>
 #include <set>
-#include "CommonMath.h"
-#include "CSVFile.h"
 
 struct MeshVertex
 {
@@ -41,7 +43,7 @@ void ConvertCSV2FBX(const char* sourceCSVFile)
 
     std::map<int, MeshVertex> mVerticsSet;
     int iVertexID = 0;
-    //calc row count
+    // calc row count
     for (int iRow = 0; iRow < pSrcFile->GetRowNum(); iRow++)
     {
         pSrcFile->GetCellValue("IDX", iRow, iVertexID);
@@ -80,7 +82,7 @@ void ConvertCSV2FBX(const char* sourceCSVFile)
 
     FbxNode* subshapeNode = FbxNode::Create(rootNode, matName.c_str());
     subshapeNode->AddMaterial(materialFbx);
-    //convert fbx mesh file 
+    // convert fbx mesh file
     int index;
     FbxMesh* meshFbx = FbxMesh::Create(subshapeNode, subshapeNode->GetName());
     FbxGeometryElementUV* meshUVs = meshFbx->CreateElementUV("UV");
@@ -115,10 +117,14 @@ void ConvertCSV2FBX(const char* sourceCSVFile)
 
         meshNormals->GetDirectArray().Add(FbxVector4(VertexNormal.x, VertexNormal.y, VertexNormal.z, 0));
 
-        Vector4 VertexTangent(mVerticsSet[index].tx, mVerticsSet[index].ty, mVerticsSet[index].tz, mVerticsSet[index].tw);
+        Vector4 VertexTangent(mVerticsSet[index].tx,
+                              mVerticsSet[index].ty,
+                              mVerticsSet[index].tz,
+                              mVerticsSet[index].tw);
         VertexTangent = VertexTangent * matRot;
 
-        meshTangents->GetDirectArray().Add(FbxVector4(VertexTangent.x, VertexTangent.y, VertexTangent.z, VertexTangent.w));
+        meshTangents->GetDirectArray().Add(
+            FbxVector4(VertexTangent.x, VertexTangent.y, VertexTangent.z, VertexTangent.w));
     }
     int iFaceID = 0;
     for (int iRow = 0; iRow < pSrcFile->GetRowNum(); iRow += 3)
@@ -134,12 +140,10 @@ void ConvertCSV2FBX(const char* sourceCSVFile)
         meshFbx->EndPolygon();
     }
 
-
     subshapeNode->SetNodeAttribute(meshFbx);
     subshapeNode->SetShadingMode(FbxNode::eTextureShading);
 
-
-    //save fbx
+    // save fbx
     FbxExporter* exporter = FbxExporter::Create(sdkManager, "");
     std::string fbxFilePath = sourceCSVFile;
     fbxFilePath = fbxFilePath.substr(0, fbxFilePath.size() - 3);
@@ -181,7 +185,7 @@ int main(int argc, char* argv[])
         std::cerr << "usage: ConvertCSV2FBX.exe file.csv\n";
         return -1;
     }
-    
+
     ConvertCSV2FBX(argv[1]);
     return 0;
 }
@@ -189,7 +193,7 @@ int main(int argc, char* argv[])
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
 // 调试程序: F5 或调试 >“开始调试”菜单
 
-// 入门使用技巧: 
+// 入门使用技巧:
 //   1. 使用解决方案资源管理器窗口添加/管理文件
 //   2. 使用团队资源管理器窗口连接到源代码管理
 //   3. 使用输出窗口查看生成输出和其他消息

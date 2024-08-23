@@ -3,3 +3,6 @@
 *.exe
 *.pdb
 build
+*.rdc
+*.fbx
+*.cap

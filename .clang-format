@@ -72,7 +72,6 @@ SpacesInAngles: false
 SpacesInParentheses : false
 SpacesInSquareBrackets : false
 SpacesInContainerLiterals: true
-SpacesInContainerLiterals: true
 SpacesInCStyleCastParentheses: false
 Standard : c++17
 UseCRLF: true
